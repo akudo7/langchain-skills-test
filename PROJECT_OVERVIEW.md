@@ -1,42 +1,42 @@
-# プロジェクト概要
+# Project Overview
 
-## 🎯 プロジェクトの目的
+## 🎯 Project Purpose
 
-LangGraph.JSのskills機能の動作確認が可能な完全な環境を構築しました。
+A complete environment has been built to verify the operation of LangGraph.JS skills functionality.
 
-## 📦 作成されたファイル一覧
+## 📦 List of Created Files
 
-### コア設定ファイル
-- ✅ [package.json](package.json) - プロジェクト設定と依存関係
-- ✅ [tsconfig.json](tsconfig.json) - TypeScript設定
-- ✅ [.env.example](.env.example) - 環境変数テンプレート
-- ✅ [.gitignore](.gitignore) - Git除外設定
+### Core Configuration Files
+- ✅ [package.json](package.json) - Project configuration and dependencies
+- ✅ [tsconfig.json](tsconfig.json) - TypeScript configuration
+- ✅ [.env.example](.env.example) - Environment variable template
+- ✅ [.gitignore](.gitignore) - Git exclusion configuration
 
-### メインプログラム
-- ✅ [src/index.ts](src/index.ts) - LangGraph.JS skillsを使用するメインプログラム
+### Main Program
+- ✅ [src/index.ts](src/index.ts) - Main program using LangGraph.JS skills
 
-### スキル実装
+### Skills Implementation
 
-#### 1. langgraph-docs スキル
+#### 1. langgraph-docs Skill
 - ✅ [skills/langgraph-docs/SKILL.md](skills/langgraph-docs/SKILL.md)
-  - LangGraphドキュメントへのアクセスを提供
-  - fetch_urlツールを使用してドキュメントを取得
-  - 最新の実装ガイダンスを提供
+  - Provides access to LangGraph documentation
+  - Retrieves documentation using the fetch_url tool
+  - Provides the latest implementation guidance
 
-#### 2. arxiv_search スキル
+#### 2. arxiv_search Skill
 - ✅ [skills/arxiv_search/SKILL.md](skills/arxiv_search/SKILL.md)
-  - arXiv検索スキルの定義と使用方法
+  - Definition and usage of the arXiv search skill
 - ✅ [skills/arxiv_search/arxiv_search.ts](skills/arxiv_search/arxiv_search.ts)
-  - arXiv APIを使用した論文検索の実装
-  - コマンドライン引数のサポート
-  - XMLレスポンスのパース
+  - Implementation of paper search using arXiv API
+  - Command-line argument support
+  - XML response parsing
 
-### ドキュメント
-- ✅ [README.md](README.md) - 詳細なプロジェクトドキュメント
-- ✅ [QUICKSTART.md](QUICKSTART.md) - クイックスタートガイド
-- ✅ [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) - このファイル
+### Documentation
+- ✅ [README.md](README.md) - Detailed project documentation
+- ✅ [QUICKSTART.md](QUICKSTART.md) - Quick start guide
+- ✅ [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) - This file
 
-## 🏗️ アーキテクチャ
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -65,9 +65,9 @@ LangGraph.JSのskills機能の動作確認が可能な完全な環境を構築�
 └─────────────────────────────────────────────┘
 ```
 
-## 🔑 主要な実装ポイント
+## 🔑 Key Implementation Points
 
-### 1. FilesystemBackendの使用
+### 1. Using FilesystemBackend
 
 ```typescript
 const skillsBackend = new FilesystemBackend({
@@ -75,30 +75,30 @@ const skillsBackend = new FilesystemBackend({
 });
 ```
 
-- ディスク上のスキルファイルを直接読み込み
-- 相対パスベースの管理
-- 開発環境に最適
+- Directly loads skill files from disk
+- Relative path-based management
+- Optimal for development environments
 
-### 2. スキルの構造化
+### 2. Skill Structure
 
-各スキルは以下の要素で構成:
+Each skill consists of the following elements:
 
 ```markdown
 ---
 name: skill-name
-description: スキルの説明
+description: Skill description
 ---
 
-# スキル名
+# Skill Name
 
 ## Overview
-概要説明
+Overview description
 
 ## Instructions
-エージェントが従う具体的な手順
+Specific steps for the agent to follow
 ```
 
-### 3. ReActAgentの作成
+### 3. Creating ReActAgent
 
 ```typescript
 const agent = createReactAgent({
@@ -108,11 +108,11 @@ const agent = createReactAgent({
 });
 ```
 
-- Claude 3.5 Sonnetモデルを使用
-- MemorySaverで会話状態を管理
-- skillsBackendを統合
+- Uses Claude 3.5 Sonnet model
+- Manages conversation state with MemorySaver
+- Integrates skillsBackend
 
-### 4. ストリーミング処理
+### 4. Stream Processing
 
 ```typescript
 const stream = await agent.stream(
@@ -122,116 +122,122 @@ const stream = await agent.stream(
 
 for await (const chunk of stream) {
   if (chunk.agent?.messages) {
-    // メッセージ処理
+    // Message processing
   }
 }
 ```
 
-## 📊 依存関係
+## 📊 Dependencies
 
-### 主要な依存関係
-- `@langchain/anthropic` - Claude AIモデル
-- `@langchain/core` - LangChainコア機能
-- `@langchain/langgraph` - LangGraphとskills機能
-- `dotenv` - 環境変数管理
+### Main Dependencies
 
-### 開発依存関係
-- `typescript` - TypeScript言語
-- `tsx` - TypeScript実行環境
-- `@types/node` - Node.js型定義
+- `@langchain/anthropic` - Claude AI model
+- `@langchain/core` - LangChain core functionality
+- `@langchain/langgraph` - LangGraph and skills functionality
+- `dotenv` - Environment variable management
 
-## 🚀 実行フロー
+### Development Dependencies
 
-1. **初期化**
+- `typescript` - TypeScript language
+- `tsx` - TypeScript execution environment
+- `@types/node` - Node.js type definitions
+
+## 🚀 Execution Flow
+
+1. **Initialization**
    ```
-   環境変数読み込み → モデル初期化 → バックエンド設定
-   ```
-
-2. **スキル読み込み**
-   ```
-   FilesystemBackend → SKILL.mdをパース → スキルを登録
+   Load environment variables → Initialize model → Configure backend
    ```
 
-3. **エージェント実行**
+2. **Load Skills**
    ```
-   ユーザークエリ → スキル選択 → ツール実行 → 結果返却
-   ```
-
-4. **ストリーミング出力**
-   ```
-   チャンクごとに処理 → メッセージ抽出 → コンソール出力
+   FilesystemBackend → Parse SKILL.md → Register skills
    ```
 
-## 🧪 テストシナリオ
+3. **Agent Execution**
+   ```
+   User query → Skill selection → Tool execution → Return results
+   ```
 
-### シナリオ1: arXiv検索
+4. **Streaming Output**
+   ```
+   Process each chunk → Extract messages → Console output
+   ```
+
+## 🧪 Test Scenarios
+
+### Scenario 1: arXiv Search
+
 ```typescript
 "Search arXiv for papers about 'transformers in natural language processing'
 and show me the top 3 results."
 ```
 
-**期待される動作:**
-1. エージェントがarxiv-searchスキルを認識
-2. arxiv_search.tsを実行
-3. arXiv APIから結果を取得
-4. 整形された結果を返却
+**Expected Behavior:**
 
-### シナリオ2: LangGraphドキュメント
+1. Agent recognizes the arxiv-search skill
+2. Executes arxiv_search.ts
+3. Retrieves results from arXiv API
+4. Returns formatted results
+
+### Scenario 2: LangGraph Documentation
+
 ```typescript
 "Can you explain how to create a basic agent using LangGraph?
 Use the langgraph-docs skill to get the latest documentation."
 ```
 
-**期待される動作:**
-1. エージェントがlanggraph-docsスキルを認識
-2. fetch_urlツールでドキュメントを取得
-3. 関連ドキュメントを選択
-4. ドキュメントに基づいた説明を生成
+**Expected Behavior:**
 
-## 🔧 カスタマイズガイド
+1. Agent recognizes the langgraph-docs skill
+2. Retrieves documentation using the fetch_url tool
+3. Selects relevant documentation
+4. Generates an explanation based on the documentation
 
-### 新しいスキルの追加
+## 🔧 Customization Guide
 
-1. **スキルディレクトリを作成**
+### Adding New Skills
+
+1. **Create a skill directory**
    ```bash
    mkdir -p skills/my-new-skill
    ```
 
-2. **SKILL.mdを作成**
+2. **Create SKILL.md**
    ```markdown
    ---
    name: my-new-skill
-   description: スキルの説明
+   description: Skill description
    ---
 
    # My New Skill
 
    ## Instructions
-   手順を記述...
+   Describe the steps...
    ```
 
-3. **必要に応じて実装ファイルを追加**
+3. **Add implementation files as needed**
    ```typescript
    // skills/my-new-skill/implementation.ts
    ```
 
-4. **自動的に読み込まれる**
-   - FilesystemBackendが自動検出
-   - 再起動後に利用可能
+4. **Automatically loaded**
+   - FilesystemBackend auto-detects
+   - Available after restart
 
-### モデルの変更
+### Changing the Model
 
 ```typescript
 const model = new ChatAnthropic({
-  model: "claude-3-opus-20240229", // 他のモデルに変更
+  model: "claude-3-opus-20240229", // Change to another model
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 ```
 
-### バックエンドの切り替え
+### Switching Backends
 
 ```typescript
-// StateBackendを使用する場合
+// When using StateBackend
 import { StateBackend } from "@langchain/langgraph/skills";
 
 const skillsBackend = new StateBackend({
@@ -243,49 +249,53 @@ const skillsBackend = new StateBackend({
 });
 ```
 
-## 📈 パフォーマンス考慮事項
+## 📈 Performance Considerations
 
-### API制限
-- **arXiv API**: 1秒あたり1リクエストを推奨
-- **Anthropic API**: 使用プランに応じた制限
+### API Limits
 
-### 最適化のヒント
-1. スキルの選択を最小限に保つ
-2. 大量のドキュメントを一度に読み込まない
-3. キャッシュ機構の実装を検討
+- **arXiv API**: 1 request per second recommended
+- **Anthropic API**: Limits based on usage plan
 
-## 🎓 学習リソース
+### Optimization Tips
 
-### 公式ドキュメント
+1. Keep skill selection to a minimum
+2. Avoid loading large amounts of documentation at once
+3. Consider implementing caching mechanisms
+
+## 🎓 Learning Resources
+
+### Official Documentation
+
 - [LangGraph.JS Skills](https://docs.langchain.com/oss/javascript/deepagents/skills)
 - [LangGraph.JS API Reference](https://js.langchain.com/docs/langgraph)
 - [Anthropic Claude API](https://docs.anthropic.com/)
 
-### サンプル実装
+### Sample Implementations
+
 - [DeepAgents.JS Examples](https://github.com/langchain-ai/deepagentsjs)
 - [LangGraph.JS Repository](https://github.com/langchain-ai/langgraphjs)
 
-## ✅ チェックリスト
+## ✅ Checklist
 
-環境が正しくセットアップされているか確認:
+Verify that the environment is set up correctly:
 
-- [ ] Node.js v18以上がインストール済み
-- [ ] `npm install`が成功
-- [ ] `.env`ファイルが作成され、APIキーが設定済み
-- [ ] `skills/`ディレクトリに2つのスキルが存在
-- [ ] `npm start`でエラーなく実行可能
-- [ ] エージェントが両方のスキルを認識
+- [ ] Node.js v18 or higher is installed
+- [ ] `npm install` succeeded
+- [ ] `.env` file is created and API key is configured
+- [ ] Two skills exist in the `skills/` directory
+- [ ] `npm start` runs without errors
+- [ ] Agent recognizes both skills
 
-## 🆘 サポート
+## 🆘 Support
 
-問題が発生した場合:
+If you encounter issues:
 
-1. [QUICKSTART.md](QUICKSTART.md)の「よくある質問」を確認
-2. [README.md](README.md)のトラブルシューティングセクションを確認
-3. 依存関係を再インストール: `rm -rf node_modules && npm install`
-4. TypeScriptの型エラーを確認: `npx tsc --noEmit`
+1. Check the FAQ in [QUICKSTART.md](QUICKSTART.md)
+2. Check the troubleshooting section in [README.md](README.md)
+3. Reinstall dependencies: `rm -rf node_modules && npm install`
+4. Check for TypeScript type errors: `npx tsc --noEmit`
 
-## 🎉 完了!
+## 🎉 Complete!
 
-このプロジェクトは、LangGraph.JSのskills機能を実際に動作させるための完全な環境です。
-`npm start`を実行して、スキルの動作を確認してください!
+This project is a complete environment for running the LangGraph.JS skills functionality in action.
+Run `npm start` to see the skills in operation!
