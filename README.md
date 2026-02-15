@@ -224,6 +224,49 @@ MIT
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
+## 🔗 Related Projects
+
+This project is part of a broader ecosystem for AI agent development. Check out these related projects:
+
+### [kudosflow](https://github.com/akudo7/kudosflow) 🌟
+
+Visual Workflow Editor for AI Agents with Skills Support
+
+- 🎨 Drag-and-drop node-based workflow builder
+- ✨ **Native LangGraph.JS Skills support** - Import and use skills directly in your workflows
+- 🔌 A2A Protocol integration for agent communication
+- ⚡ Real-time execution and monitoring
+- 🛠️ Built with TypeScript
+
+Perfect for visually designing and testing AI agent workflows. Skills developed in this project can be directly imported and used in kudosflow!
+
+### [a2a-server](https://github.com/akudo7/a2a-server)
+
+Production-Ready A2A Protocol Server
+
+- 🌐 Dual protocol support: HTTP REST + JSON-RPC 2.0
+- 📊 SceneGraphManager v2.0.0 integration
+- 🔄 JSON-driven AI workflow orchestration with LangGraph
+- 🚀 Production-ready deployment architecture
+- 🛠️ Built with TypeScript
+
+Enterprise-grade server for orchestrating AI agent workflows at scale.
+
+### [OpenAgentJson](https://github.com/akudo7/OpenAgentJson)
+
+Declarative JSON Format for AI Workflows
+
+- 📝 Specification for JSON-based agent workflow definitions
+- 🔧 Works seamlessly with LangGraph.js
+- 📚 Standard format for sharing and versioning workflows
+- 🌍 Language-agnostic workflow definitions
+
+Define your AI agent workflows as code using a standardized JSON format.
+
+---
+
+**Development Workflow**: Develop skills in this project → Visualize in kudosflow → Deploy with a2a-server → Define with OpenAgentJson
+
 ## ⚠️ Notes
 
 - Be mindful of arXiv API rate limits (avoid excessive requests)
