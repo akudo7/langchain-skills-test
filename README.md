@@ -245,7 +245,7 @@ Perfect for visually designing and testing AI agent workflows. Skills developed 
 Production-Ready A2A Protocol Server
 
 - 🌐 Dual protocol support: HTTP REST + JSON-RPC 2.0
-- 📊 SceneGraphManager v2.0.0 integration
+- 📊 SceneGraphManager v2.1.0 integration
 - 🔄 JSON-driven AI workflow orchestration with LangGraph
 - 🚀 Production-ready deployment architecture
 - 🛠️ Built with TypeScript
