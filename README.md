@@ -32,19 +32,29 @@ A skill for searching research papers from the arXiv preprint repository.
 ## 📁 Project Structure
 
 ```
-SkillsTest/
+langchain-skills-test/
 ├── src/
-│   └── index.ts              # Main program
+│   ├── index.ts                      # Main entry point (Skills with streaming)
+│   ├── index-with-skills.ts          # Skills implementation example
+│   ├── index-with-graph.ts           # Custom graph implementation example
+│   └── index-with-claude-tools.ts    # Claude tools integration example
 ├── skills/
 │   ├── langgraph-docs/
-│   │   └── SKILL.md          # LangGraph documentation skill definition
-│   └── arxiv_search/
-│       ├── SKILL.md          # arXiv search skill definition
-│       └── arxiv_search.ts   # arXiv search implementation
-├── package.json              # Project configuration
-├── tsconfig.json             # TypeScript configuration
-├── .env.example              # Environment variables template
-└── README.md                 # This file
+│   │   └── SKILL.md                  # LangGraph documentation skill
+│   └── arxiv-search/
+│       ├── SKILL.md                  # arXiv search skill definition
+│       └── arxiv_search.ts           # arXiv API implementation
+├── package.json                      # Project dependencies and scripts
+├── tsconfig.json                     # TypeScript configuration
+├── .env.example                      # Environment variables template
+├── .gitignore                        # Git ignore rules
+├── README.md                         # This file (English)
+├── CLAUDE.md                         # Project instructions for Claude Code
+├── PROJECT_OVERVIEW.md               # Detailed project overview
+├── QUICKSTART.md                     # Quick start guide
+├── GRAPH_IMPLEMENTATION.md           # LangGraph implementation guide (Japanese)
+├── GRAPH_IMPLEMENTATION_EN.md        # LangGraph implementation guide (English)
+└── yarn.lock                         # Yarn dependency lock file
 ```
 
 ## 🚀 Setup
