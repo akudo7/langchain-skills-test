@@ -2,38 +2,54 @@
 
 ## 🎯 Project Purpose
 
-A complete environment has been built to verify the operation of LangGraph.JS skills functionality.
+A complete environment has been built to verify the operation of LangGraph.JS skills functionality. This project includes multiple implementation approaches:
+
+- **Skills Framework**: Using ReActAgent with FilesystemBackend for skill management
+- **Custom Graph**: Manual graph implementation using StateGraph
+- **Native Tools**: Direct tool integration with Claude/OpenAI models
+
+The default implementation uses OpenAI's GPT-4o model with the Skills framework.
 
 ## 📦 List of Created Files
 
 ### Core Configuration Files
+
 - ✅ [package.json](package.json) - Project configuration and dependencies
 - ✅ [tsconfig.json](tsconfig.json) - TypeScript configuration
 - ✅ [.env.example](.env.example) - Environment variable template
 - ✅ [.gitignore](.gitignore) - Git exclusion configuration
 
-### Main Program
-- ✅ [src/index.ts](src/index.ts) - Main program using LangGraph.JS skills
+### Main Programs
+
+- ✅ [src/index.ts](src/index.ts) - Main program (OpenAI GPT-4o with Skills)
+- ✅ [src/index-with-skills.ts](src/index-with-skills.ts) - Agent using Skills framework
+- ✅ [src/index-with-graph.ts](src/index-with-graph.ts) - Custom graph implementation
+- ✅ [src/index-with-claude-tools.ts](src/index-with-claude-tools.ts) - Claude with native tools
 
 ### Skills Implementation
 
 #### 1. langgraph-docs Skill
+
 - ✅ [skills/langgraph-docs/SKILL.md](skills/langgraph-docs/SKILL.md)
   - Provides access to LangGraph documentation
   - Retrieves documentation using the fetch_url tool
   - Provides the latest implementation guidance
 
-#### 2. arxiv_search Skill
-- ✅ [skills/arxiv_search/SKILL.md](skills/arxiv_search/SKILL.md)
+#### 2. arxiv-search Skill
+
+- ✅ [skills/arxiv-search/SKILL.md](skills/arxiv-search/SKILL.md)
   - Definition and usage of the arXiv search skill
-- ✅ [skills/arxiv_search/arxiv_search.ts](skills/arxiv_search/arxiv_search.ts)
+- ✅ [skills/arxiv-search/arxiv_search.ts](skills/arxiv-search/arxiv_search.ts)
   - Implementation of paper search using arXiv API
   - Command-line argument support
   - XML response parsing
 
 ### Documentation
+
 - ✅ [README.md](README.md) - Detailed project documentation
 - ✅ [QUICKSTART.md](QUICKSTART.md) - Quick start guide
+- ✅ [CLAUDE.md](CLAUDE.md) - Instructions for Claude Code
+- ✅ [GRAPH_IMPLEMENTATION.md](GRAPH_IMPLEMENTATION.md) - Custom graph implementation details
 - ✅ [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) - This file
 
 ## 🏗️ Architecture
@@ -41,7 +57,7 @@ A complete environment has been built to verify the operation of LangGraph.JS sk
 ```
 ┌─────────────────────────────────────────────┐
 │         LangGraph.JS Agent                  │
-│  (ChatAnthropic + ReActAgent)              │
+│  (OpenAI GPT-4o / Claude + ReActAgent)     │
 └────────────┬────────────────────────────────┘
              │
              │ uses
@@ -57,7 +73,7 @@ A complete environment has been built to verify the operation of LangGraph.JS sk
 │           Skills Directory                   │
 │                                             │
 │  ┌──────────────────┐  ┌─────────────────┐│
-│  │ langgraph-docs   │  │  arxiv_search   ││
+│  │ langgraph-docs   │  │  arxiv-search   ││
 │  │  └─ SKILL.md     │  │  ├─ SKILL.md    ││
 │  │                  │  │  └─ arxiv_      ││
 │  │                  │  │     search.ts   ││
@@ -108,7 +124,7 @@ const agent = createReactAgent({
 });
 ```
 
-- Uses Claude 3.5 Sonnet model
+- Uses OpenAI GPT-4o model (default) or Claude 3.5 Sonnet
 - Manages conversation state with MemorySaver
 - Integrates skillsBackend
 
@@ -131,7 +147,8 @@ for await (const chunk of stream) {
 
 ### Main Dependencies
 
-- `@langchain/anthropic` - Claude AI model
+- `@langchain/openai` - OpenAI model integration (GPT-4o)
+- `@langchain/anthropic` - Claude AI model integration
 - `@langchain/core` - LangChain core functionality
 - `@langchain/langgraph` - LangGraph and skills functionality
 - `dotenv` - Environment variable management
@@ -227,9 +244,24 @@ Use the langgraph-docs skill to get the latest documentation."
 
 ### Changing the Model
 
+**Using OpenAI (default):**
+
 ```typescript
+import { ChatOpenAI } from "@langchain/openai";
+
+const model = new ChatOpenAI({
+  model: "gpt-4o", // or "gpt-4-turbo", "gpt-3.5-turbo"
+  apiKey: process.env.OPENAI_API_KEY,
+});
+```
+
+**Using Claude:**
+
+```typescript
+import { ChatAnthropic } from "@langchain/anthropic";
+
 const model = new ChatAnthropic({
-  model: "claude-3-opus-20240229", // Change to another model
+  model: "claude-3-5-sonnet-20241022", // or "claude-3-opus-20240229"
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 ```
@@ -254,6 +286,7 @@ const skillsBackend = new StateBackend({
 ### API Limits
 
 - **arXiv API**: 1 request per second recommended
+- **OpenAI API**: Depends on your API plan and tier
 - **Anthropic API**: Limits based on usage plan
 
 ### Optimization Tips
@@ -268,6 +301,7 @@ const skillsBackend = new StateBackend({
 
 - [LangGraph.JS Skills](https://docs.langchain.com/oss/javascript/deepagents/skills)
 - [LangGraph.JS API Reference](https://js.langchain.com/docs/langgraph)
+- [OpenAI API Documentation](https://platform.openai.com/docs)
 - [Anthropic Claude API](https://docs.anthropic.com/)
 
 ### Sample Implementations
@@ -280,11 +314,12 @@ const skillsBackend = new StateBackend({
 Verify that the environment is set up correctly:
 
 - [ ] Node.js v18 or higher is installed
-- [ ] `npm install` succeeded
-- [ ] `.env` file is created and API key is configured
-- [ ] Two skills exist in the `skills/` directory
-- [ ] `npm start` runs without errors
+- [ ] `yarn install` or `npm install` succeeded
+- [ ] `.env` file is created with `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`)
+- [ ] Two skills exist in the `skills/` directory (langgraph-docs, arxiv-search)
+- [ ] `yarn start` or `npm start` runs without errors
 - [ ] Agent recognizes both skills
+- [ ] All four implementation files are present in `src/` directory
 
 ## 🆘 Support
 
