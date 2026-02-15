@@ -52,8 +52,7 @@ langchain-skills-test/
 ├── CLAUDE.md                         # Project instructions for Claude Code
 ├── PROJECT_OVERVIEW.md               # Detailed project overview
 ├── QUICKSTART.md                     # Quick start guide
-├── GRAPH_IMPLEMENTATION.md           # LangGraph implementation guide (Japanese)
-├── GRAPH_IMPLEMENTATION_EN.md        # LangGraph implementation guide (English)
+├── GRAPH_IMPLEMENTATION.md           # LangGraph implementation guide
 └── yarn.lock                         # Yarn dependency lock file
 ```
 
