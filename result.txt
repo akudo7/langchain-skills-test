@@ -1,0 +1,140 @@
+% yarn start:claude > result.txt
+yarn run v1.22.22
+$ tsx src/index-with-claude-tools.ts
+🚀 LangGraph.JS with Claude Code Tools + FilesystemBackend Skills
+
+📁 Loading skills from FilesystemBackend...
+
+✅ Loaded 2 skills:
+   - arxiv-search: Search arXiv preprint repository for papers in physics, mathematics, computer science, quantitative biology, and related fields
+   - langgraph-docs: Use this skill for requests related to LangGraph.js (JavaScript/TypeScript) in order to fetch relevant documentation to provide accurate, up-to-date guidance.
+
+🔧 Loaded Claude Code-style tools:
+   - read_file
+   - write_file
+   - edit_file
+   - glob_files
+   - grep_search
+   - bash_command
+   - web_fetch
+
+🔧 Building StateGraph with nodes and edges...
+
+✅ Graph compiled successfully!
+
+📊 Graph structure:
+   Nodes: agent (with skills + Claude Code tools), tools
+   Edges:
+     - START → agent
+     - agent → tools (if tool calls exist)
+     - agent → END (if no tool calls)
+     - tools → agent (loop back)
+
+============================================================
+
+📚 Example 1: Testing arXiv search skill with Claude Code tools
+------------------------------------------------------------
+Query: Search arXiv for papers about 'transformers in natural language processing' and show me the top 3 results. Use the arxiv-search skill.
+
+Thread ID: fe1a7861-cba7-4e4b-b965-897737b515d7
+
+
+Agent Response:
+Here are the top 3 arXiv papers on "transformers in natural language processing":
+
+1. **Title:** An Open Natural Language Processing Development Framework for EHR-based Clinical Research: A case demonstration using the National COVID Cohort Collaborative (N3C)
+   **Summary:** This study proposes an open NLP development framework focusing on clinical research, particularly using the National COVID Cohort Collaborative (N3C). It presents a use case for information extraction from COVID-19 clinical notes, involving open data annotation, a community-driven ruleset platform, and synthetic text data generation. The study highlights the feasibility of federated NLP algorithm development for multi-institution clinical research.
+
+2. **Title:** A Comprehensive Review of State-of-The-Art Methods for Java Code Generation from Natural Language Text
+   **Summary:** This paper reviews the methods for Java Code Generation from natural language text, a task that improves programmers' productivity. It discusses the progress in using deep learning models, especially transformer-based models, for this task. The paper explores various models, datasets, evaluation metrics, and presents results on the CONCODE dataset, along with future research directions.
+
+3. **Title:** Towards the Study of Morphological Processing of the Tangkhul Language
+   **Summary:** This paper explores the initial attempts at morphological processing of the Tangkhul language using an unsupervised approach. The study uses a small corpus from various sources and tests morpheme identification using morphessor, yielding reasonable results despite the limited dataset.
+
+These papers cover a range of topics within NLP, demonstrating applications from clinical research and code generation to language processing for lesser-studied languages.
+
+
+============================================================
+
+📖 Example 2: Testing langgraph-docs skill
+------------------------------------------------------------
+Query: Can you explain how to create a basic agent using LangGraph? Use the langgraph-docs skill to get the latest documentation.
+
+Thread ID: 24384e71-f00c-46e2-930c-6376eb2d8107
+
+
+Agent Response:
+To create a basic agent using LangGraph, you can follow the official [LangGraph Quickstart guide](https://docs.langchain.com/oss/javascript/langgraph/quickstart). This guide helps you build a chatbot that can use tools and maintain conversation history, with options to include human-in-the-loop capabilities and explore time-travel features. Here’s a summarized version of the steps you would typically follow:
+
+1. **Install LangGraph**: Ensure you have Node.js installed. You can install LangGraph and any required dependencies using npm:
+   ```bash
+   npm install @langchain/langgraph @langchain/core
+   ```
+
+2. **Initialize a New Project**: Set up a new Node.js project if you haven’t already.
+   ```bash
+   mkdir langgraph-agent
+   cd langgraph-agent
+   npm init -y
+   ```
+
+3. **Create a Basic Agent**: 
+   - Write your agent code in JavaScript or TypeScript.
+   - Define the structure of the agent using LangGraph’s APIs. This typically involves setting up nodes (functions or tasks), edges (connections between nodes), and specifying the control flow.
+
+4. **Add Functionality**: Depending on your application's needs, utilize different LangGraph features like memory for handling conversation states, tool nodes for expanding capabilities, breakpoints for debugging, and interrupts for human-in-the-loop scenarios.
+
+5. **Deploy and Test Your Agent**: 
+   - Use a local server setup or a selected deployment option to run your agent.
+   - Test your agent using LangGraph Studio to visualize the agent’s execution flow and debug as needed.
+
+6. **Explore Advanced Features**: Once you're comfortable with the basics, consider exploring advanced features:
+   - **Persistence**: To maintain state across sessions.
+   - **Streaming**: To improve responsiveness by progressively displaying output.
+   - **Multi-Agent Systems**: For complex applications composed of multiple independent agents.
+
+For detailed implementation steps and code examples, please refer to the LangGraph quickstart [documentation](https://docs.langchain.com/oss/javascript/langgraph/quickstart).
+
+
+============================================================
+
+📁 Example 3: Testing Claude Code file tools
+------------------------------------------------------------
+Query: Use glob_files to find all TypeScript files in the src directory, then use grep_search to find files containing 'StateGraph'.
+
+Thread ID: 4fba530d-2333-4bf8-aced-95636a1d3686
+
+
+Agent Response:
+Here are the results:
+
+### TypeScript Files in the `src` Directory:
+1. `src/index-with-claude-tools.ts`
+2. `src/index-with-skills.ts`
+3. `src/index-with-graph.ts`
+4. `src/index.ts`
+
+### Files Containing 'StateGraph':
+- **`src/index-with-skills.ts`**:
+  - Line: `import { StateGraph, Annotation, END } from "@langchain/langgraph";`
+  - Line: `console.log("🔧 Building StateGraph with nodes and edges...\n");`
+  - Line: `const workflow = new StateGraph(StateAnnotation)`
+
+- **`src/index-with-claude-tools.ts`**:
+  - Line: `import { StateGraph, Annotation, END } from "@langchain/langgraph";`
+  - Line: `console.log("🔧 Building StateGraph with nodes and edges...\n");`
+  - Line: `const workflow = new StateGraph(StateAnnotation)`
+  - Line: `const fileOpsQuery = "Use glob_files to find all TypeScript files in the src directory, then use grep_search to find files containing 'StateGraph'.";`
+
+- **`src/index-with-graph.ts`**:
+  - Line: `import { StateGraph, Annotation, END } from "@langchain/langgraph";`
+  - Line: `console.log("🔧 Building StateGraph with nodes and edges...\n");`
+  - Line: `const workflow = new StateGraph(StateAnnotation)`
+
+These files contain the term 'StateGraph'.
+
+
+============================================================
+
+✨ Claude Code tools + Skills test completed successfully!
+Done in 33.22s.
