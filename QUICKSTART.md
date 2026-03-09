@@ -5,7 +5,7 @@
 ### Step 1: Installation
 
 ```bash
-npm install
+yarn install
 ```
 
 ### Step 2: Configure API Key
@@ -21,22 +21,24 @@ cp .env.example .env
 ### Step 3: Run
 
 ```bash
-npm start
+yarn start
 ```
 
 ## 📊 Expected Output
 
 When you run the program, you should see output similar to this:
 
-```
+```text
 🚀 LangGraph.JS Skills Test Environment
 
 📁 Loading skills from: /path/to/skills
 
-✅ Agent initialized with skills:
+✅ Agent initialized with 13 skills:
 
    - langgraph-docs: Access LangGraph documentation
    - arxiv-search: Search arXiv research papers
+   - framework-selection: LangChain vs LangGraph selection guide
+   - ... (11 LangChain Skills v1)
 
 ============================================================
 
@@ -53,7 +55,7 @@ Agent: [Agent response]
 ### Test arXiv Search Skill Independently
 
 ```bash
-npx tsx skills/arxiv_search/arxiv_search.ts "quantum computing" --max-papers 3
+npx tsx skills/arxiv-search/arxiv_search.ts "quantum computing" --max-papers 3
 ```
 
 ### Running Custom Queries
@@ -80,10 +82,10 @@ for await (const chunk of customStream) {
 
 ```bash
 # Development mode (watches for file changes)
-npm run dev
+yarn dev
 
 # Run arxiv_search.ts directly
-npx tsx skills/arxiv_search/arxiv_search.ts "your query"
+npx tsx skills/arxiv-search/arxiv_search.ts "your query"
 
 # TypeScript type checking
 npx tsc --noEmit
