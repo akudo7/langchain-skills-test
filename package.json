@@ -1,6 +1,6 @@
 {
   "name": "langgraph-skills-test",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "LangGraph.JS Skills functionality test environment",
   "type": "module",
   "scripts": {
@@ -11,7 +11,11 @@
     "start:skills": "tsx src/index-with-skills.ts",
     "dev:skills": "tsx watch src/index-with-skills.ts",
     "start:claude": "tsx src/index-with-claude-tools.ts",
-    "dev:claude": "tsx watch src/index-with-claude-tools.ts"
+    "dev:claude": "tsx watch src/index-with-claude-tools.ts",
+    "exp:local-shell": "tsx src/experiments/local-shell.ts",
+    "exp:tools-stream": "tsx src/experiments/tools-stream.ts",
+    "exp:standard-schema": "tsx src/experiments/standard-schema.ts",
+    "exp:skill-queries": "tsx src/experiments/skill-queries.ts"
   },
   "keywords": [
     "langgraph",
@@ -22,12 +26,13 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@langchain/core": "^1.1.20",
-    "@langchain/langgraph": "^1.1.4",
-    "@langchain/openai": "^1.2.6",
-    "deepagents": "^1.7.3",
+    "@langchain/core": "^1.1.31",
+    "@langchain/langgraph": "^1.2.1",
+    "@langchain/openai": "^1.2.12",
+    "deepagents": "^1.8.1",
     "dotenv": "^16.4.7",
     "glob": "^13.0.1",
+    "langchain": "^1.2.30",
     "zod": "^4.3.6"
   },
   "devDependencies": {

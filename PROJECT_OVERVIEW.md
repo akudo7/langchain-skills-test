@@ -21,21 +21,27 @@ The default implementation uses OpenAI's GPT-4o model with the Skills framework.
 
 ### Main Programs
 
-- ✅ [src/index.ts](src/index.ts) - Main program (OpenAI GPT-4o with Skills)
+- ✅ [src/index.ts](src/index.ts) - Main program (deepagents + FilesystemBackend)
 - ✅ [src/index-with-skills.ts](src/index-with-skills.ts) - Agent using Skills framework
 - ✅ [src/index-with-graph.ts](src/index-with-graph.ts) - Custom graph implementation
-- ✅ [src/index-with-claude-tools.ts](src/index-with-claude-tools.ts) - Claude with native tools
+- ✅ [src/index-with-claude-tools.ts](src/index-with-claude-tools.ts) - Claude tools integration example
+
+### Experiment Programs
+
+- ✅ [src/experiments/local-shell.ts](src/experiments/local-shell.ts) - LocalShellBackend demo
+- ✅ [src/experiments/tools-stream.ts](src/experiments/tools-stream.ts) - streamMode: "tools" demo
+- ✅ [src/experiments/standard-schema.ts](src/experiments/standard-schema.ts) - Zod v4 + withStructuredOutput demo
+- ✅ [src/experiments/skill-queries.ts](src/experiments/skill-queries.ts) - Skill queries demo
+- ✅ [src/experiments/remaining-skill-queries.ts](src/experiments/remaining-skill-queries.ts) - Additional skill queries demo
 
 ### Skills Implementation
 
-#### 1. langgraph-docs Skill
+#### Built-in Skills (2)
 
 - ✅ [skills/langgraph-docs/SKILL.md](skills/langgraph-docs/SKILL.md)
   - Provides access to LangGraph documentation
   - Retrieves documentation using the fetch_url tool
   - Provides the latest implementation guidance
-
-#### 2. arxiv-search Skill
 
 - ✅ [skills/arxiv-search/SKILL.md](skills/arxiv-search/SKILL.md)
   - Definition and usage of the arXiv search skill
@@ -43,6 +49,20 @@ The default implementation uses OpenAI's GPT-4o model with the Skills framework.
   - Implementation of paper search using arXiv API
   - Command-line argument support
   - XML response parsing
+
+#### LangChain Skills v1 (11 skills)
+
+- ✅ [skills/langchain-skills/framework-selection/SKILL.md](skills/langchain-skills/framework-selection/SKILL.md)
+- ✅ [skills/langchain-skills/langchain-dependencies/SKILL.md](skills/langchain-skills/langchain-dependencies/SKILL.md)
+- ✅ [skills/langchain-skills/langchain-fundamentals/SKILL.md](skills/langchain-skills/langchain-fundamentals/SKILL.md)
+- ✅ [skills/langchain-skills/langchain-middleware/SKILL.md](skills/langchain-skills/langchain-middleware/SKILL.md)
+- ✅ [skills/langchain-skills/langchain-rag/SKILL.md](skills/langchain-skills/langchain-rag/SKILL.md)
+- ✅ [skills/langchain-skills/langgraph-fundamentals/SKILL.md](skills/langchain-skills/langgraph-fundamentals/SKILL.md)
+- ✅ [skills/langchain-skills/langgraph-persistence/SKILL.md](skills/langchain-skills/langgraph-persistence/SKILL.md)
+- ✅ [skills/langchain-skills/langgraph-human-in-the-loop/SKILL.md](skills/langchain-skills/langgraph-human-in-the-loop/SKILL.md)
+- ✅ [skills/langchain-skills/deep-agents-core/SKILL.md](skills/langchain-skills/deep-agents-core/SKILL.md)
+- ✅ [skills/langchain-skills/deep-agents-memory/SKILL.md](skills/langchain-skills/deep-agents-memory/SKILL.md)
+- ✅ [skills/langchain-skills/deep-agents-orchestration/SKILL.md](skills/langchain-skills/deep-agents-orchestration/SKILL.md)
 
 ### Documentation
 
@@ -69,16 +89,30 @@ The default implementation uses OpenAI's GPT-4o model with the Skills framework.
              │
              │ reads
              ↓
-┌─────────────────────────────────────────────┐
-│           Skills Directory                   │
-│                                             │
-│  ┌──────────────────┐  ┌─────────────────┐│
-│  │ langgraph-docs   │  │  arxiv-search   ││
-│  │  └─ SKILL.md     │  │  ├─ SKILL.md    ││
-│  │                  │  │  └─ arxiv_      ││
-│  │                  │  │     search.ts   ││
-│  └──────────────────┘  └─────────────────┘│
-└─────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                  Skills Directory                    │
+│                                                      │
+│  ┌────────────────┐  ┌──────────────────────────┐   │
+│  │ langgraph-docs │  │     arxiv-search         │   │
+│  │  └─ SKILL.md   │  │  ├─ SKILL.md             │   │
+│  │                │  │  └─ arxiv_search.ts       │   │
+│  └────────────────┘  └──────────────────────────┘   │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  langchain-skills/ (11 skills)               │   │
+│  │  ├─ framework-selection/SKILL.md             │   │
+│  │  ├─ langchain-dependencies/SKILL.md          │   │
+│  │  ├─ langchain-fundamentals/SKILL.md          │   │
+│  │  ├─ langchain-middleware/SKILL.md            │   │
+│  │  ├─ langchain-rag/SKILL.md                   │   │
+│  │  ├─ langgraph-fundamentals/SKILL.md          │   │
+│  │  ├─ langgraph-persistence/SKILL.md           │   │
+│  │  ├─ langgraph-human-in-the-loop/SKILL.md     │   │
+│  │  ├─ deep-agents-core/SKILL.md                │   │
+│  │  ├─ deep-agents-memory/SKILL.md              │   │
+│  │  └─ deep-agents-orchestration/SKILL.md       │   │
+│  └──────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────┘
 ```
 
 ## 🔑 Key Implementation Points
@@ -114,19 +148,19 @@ Overview description
 Specific steps for the agent to follow
 ```
 
-### 3. Creating ReActAgent
+### 3. Creating DeepAgent
 
 ```typescript
-const agent = createReactAgent({
-  llm: model,
-  checkpointSaver: checkpointer,
-  skillsBackend,
+const agent = createDeepAgent({
+  model: model,
+  backend: backend,
+  skills: ["/skills/"],
 });
 ```
 
-- Uses OpenAI GPT-4o model (default) or Claude 3.5 Sonnet
-- Manages conversation state with MemorySaver
-- Integrates skillsBackend
+- Uses OpenAI GPT-4o model
+- Manages conversation state via FilesystemBackend
+- Loads skills from the `skills/` directory
 
 ### 4. Stream Processing
 
@@ -148,9 +182,10 @@ for await (const chunk of stream) {
 ### Main Dependencies
 
 - `@langchain/openai` - OpenAI model integration (GPT-4o)
-- `@langchain/anthropic` - Claude AI model integration
-- `@langchain/core` - LangChain core functionality
-- `@langchain/langgraph` - LangGraph and skills functionality
+- `@langchain/core` - LangChain core functionality (Zod v4 / Standard Schema)
+- `@langchain/langgraph` - LangGraph framework (`tools` stream mode)
+- `deepagents` - Skills framework (`LocalShellBackend`, summarization middleware)
+- `zod` - Schema validation (v4)
 - `dotenv` - Environment variable management
 
 ### Development Dependencies
@@ -314,12 +349,12 @@ const skillsBackend = new StateBackend({
 Verify that the environment is set up correctly:
 
 - [ ] Node.js v18 or higher is installed
-- [ ] `yarn install` or `npm install` succeeded
-- [ ] `.env` file is created with `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`)
-- [ ] Two skills exist in the `skills/` directory (langgraph-docs, arxiv-search)
-- [ ] `yarn start` or `npm start` runs without errors
-- [ ] Agent recognizes both skills
-- [ ] All four implementation files are present in `src/` directory
+- [ ] `yarn install` succeeded
+- [ ] `.env` file is created with `OPENAI_API_KEY`
+- [ ] 13 skills exist in the `skills/` directory (2 built-in + 11 LangChain Skills v1)
+- [ ] `yarn start` runs without errors
+- [ ] Agent recognizes skills
+- [ ] All source files are present in `src/` and `src/experiments/` directories
 
 ## 🆘 Support
 
@@ -327,10 +362,10 @@ If you encounter issues:
 
 1. Check the FAQ in [QUICKSTART.md](QUICKSTART.md)
 2. Check the troubleshooting section in [README.md](README.md)
-3. Reinstall dependencies: `rm -rf node_modules && npm install`
-4. Check for TypeScript type errors: `npx tsc --noEmit`
+3. Reinstall dependencies: `rm -rf node_modules && yarn install`
+4. Check for TypeScript type errors: `yarn tsc --noEmit`
 
 ## 🎉 Complete!
 
 This project is a complete environment for running the LangGraph.JS skills functionality in action.
-Run `npm start` to see the skills in operation!
+Run `yarn start` to see the skills in operation!

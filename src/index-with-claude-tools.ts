@@ -42,51 +42,56 @@ function shouldContinue(state: typeof StateAnnotation.State): "tools" | "end" {
 }
 
 /**
- * Manually load skills metadata from FilesystemBackend
+ * Manually load skills metadata from FilesystemBackend (recursive)
  */
 async function loadSkillsMetadata(backend: FilesystemBackend, skillsPath: string) {
-  const skills = [];
+  const skills: { name: string; description: string; path: string; instructions: string }[] = [];
 
-  // Enumerate subdirectories in the skills directory
-  const skillDirs = await backend.lsInfo(skillsPath);
+  async function scanDir(dirPath: string) {
+    const entries = await backend.lsInfo(dirPath);
 
-  for (const dir of skillDirs) {
-    if (dir.is_dir) {
-      // When virtualMode=true, paths start with /, so concatenate as-is
-      const skillMdPath = `${dir.path}SKILL.md`;
+    for (const entry of entries) {
+      if (entry.is_dir) {
+        // When virtualMode=true, paths start with /, so concatenate as-is
+        const skillMdPath = `${entry.path}SKILL.md`;
 
-      try {
-        // Read SKILL.md (use readRaw to get raw content)
-        const fileData = await backend.readRaw(skillMdPath);
-        const content = fileData.content.join('\n');
+        try {
+          // Try to read SKILL.md directly in this directory
+          const fileData = await backend.readRaw(skillMdPath);
+          const content = fileData.content.join('\n');
 
-        // Parse YAML frontmatter
-        const frontmatterMatch = content.match(/^---\n([\s\S]+?)\n---/);
+          // Parse YAML frontmatter
+          const frontmatterMatch = content.match(/^---\n([\s\S]+?)\n---/);
 
-        if (frontmatterMatch) {
-          const frontmatter = frontmatterMatch[1];
-          const nameMatch = frontmatter.match(/name:\s*(.+)/);
-          const descMatch = frontmatter.match(/description:\s*(.+)/);
+          if (frontmatterMatch) {
+            const frontmatter = frontmatterMatch[1];
+            const nameMatch = frontmatter.match(/name:\s*(.+)/);
+            const descMatch = frontmatter.match(/description:\s*["']?([\s\S]+?)["']?$/m);
 
-          if (nameMatch && descMatch) {
-            // Get the body after frontmatter
-            const instructions = content.replace(/^---\n[\s\S]+?\n---\n/, '');
+            if (nameMatch && descMatch) {
+              // Get the body after frontmatter
+              const instructions = content.replace(/^---\n[\s\S]+?\n---\n/, '');
 
-            skills.push({
-              name: nameMatch[1].trim(),
-              description: descMatch[1].trim(),
-              path: skillMdPath,
-              instructions: instructions.trim(),
-            });
+              skills.push({
+                name: nameMatch[1].trim(),
+                description: descMatch[1].trim().replace(/^["']|["']$/g, ''),
+                path: skillMdPath,
+                instructions: instructions.trim(),
+              });
+            }
+          } else {
+            // No SKILL.md here, recurse into subdirectory
+            await scanDir(entry.path);
           }
+        } catch (error) {
+          // No SKILL.md in this directory, recurse into subdirectory
+          await scanDir(entry.path);
         }
-      } catch (error) {
-        // Skip if skill file is not found
-        console.warn(`Warning: Could not load skill from ${skillMdPath}`);
       }
     }
   }
 
+  await scanDir(skillsPath);
   return skills;
 }
 

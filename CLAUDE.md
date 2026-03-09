@@ -11,8 +11,11 @@ This is a LangGraph.JS Skills test environment that demonstrates how to implemen
 ### Running the Application
 
 ```bash
-# Run the main test program
+# Run the main test program (deepagents + FilesystemBackend)
 yarn start
+
+# Run with Claude-style tools (index-with-claude-tools.ts)
+yarn start:claude
 
 # Run in development mode with file watching
 yarn dev
@@ -25,7 +28,7 @@ yarn tsc --noEmit
 
 ```bash
 # Test the arXiv search skill directly
-yarn tsx skills/arxiv_search/arxiv_search.ts "your query" --max-papers 5
+yarn tsx skills/arxiv-search/arxiv_search.ts "your query" --max-papers 5
 ```
 
 ### Installing Dependencies
@@ -41,26 +44,58 @@ yarn install
 **Agent Setup Flow:**
 1. Load environment variables (OPENAI_API_KEY from `.env`)
 2. Initialize ChatOpenAI model with gpt-4o
-3. Create MemorySaver for conversation state management
-4. Set up FilesystemBackend pointing to `skills/` directory
-5. Create ReActAgent with LLM, checkpointer, and skills backend
+3. Create FilesystemBackend pointing to project root
+4. Create agent with `createDeepAgent` (deepagents) or `createReactAgent` (langgraph)
+5. Skills loaded via `skills: ["/skills/"]` config
 
 **Skills Backend:**
-- Uses `FilesystemBackend` to dynamically load skills from the `skills/` directory
-- Skills are loaded by passing `skills: ["/"]` in the agent config
+
+- Uses `FilesystemBackend` (deepagents) to dynamically load skills from the `skills/` directory
+- Skills are loaded by passing `skills: ["/skills/"]` in the agent config
 - Each skill is defined by a `SKILL.md` file with frontmatter and instructions
+- `src/index-with-claude-tools.ts` uses recursive scan to detect nested skills
 
 **Message Flow:**
 ```
-User Query → Agent Stream → Skill Selection → Tool Execution → Response
+User Query → Agent → Skill Selection (read_file) → Tool Execution → Response
 ```
 
 ### Key Files
 
-- **[src/index.ts](src/index.ts)**: Main entry point that initializes the agent and runs test queries
-- **[skills/langgraph-docs/SKILL.md](skills/langgraph-docs/SKILL.md)**: Skill for accessing LangGraph documentation
-- **[skills/arxiv_search/SKILL.md](skills/arxiv_search/SKILL.md)**: Skill definition for arXiv paper search
-- **[skills/arxiv_search/arxiv_search.ts](skills/arxiv_search/arxiv_search.ts)**: Implementation of arXiv API integration
+- **[src/index.ts](src/index.ts)**: Main entry point using `createDeepAgent` with `FilesystemBackend`
+- **[src/index-with-claude-tools.ts](src/index-with-claude-tools.ts)**: Alternative entry with manual skill loading (recursive scan)
+- **[src/experiments/local-shell.ts](src/experiments/local-shell.ts)**: `LocalShellBackend` demo
+- **[src/experiments/tools-stream.ts](src/experiments/tools-stream.ts)**: `streamMode: "tools"` demo
+- **[src/experiments/standard-schema.ts](src/experiments/standard-schema.ts)**: Zod v4 + `withStructuredOutput` demo
+- **[src/experiments/skill-queries.ts](src/experiments/skill-queries.ts)**: skill queries demo
+- **[skills/langgraph-docs/SKILL.md](skills/langgraph-docs/SKILL.md)**: LangGraph documentation skill
+- **[skills/arxiv-search/SKILL.md](skills/arxiv-search/SKILL.md)**: arXiv paper search skill
+- **[skills/langchain-skills/](skills/langchain-skills/)**: 11 skills from `langchain-ai/langchain-skills`
+
+### Skills Directory Structure
+
+```
+skills/
+├── arxiv-search/
+│   ├── SKILL.md
+│   └── arxiv_search.ts
+├── langgraph-docs/
+│   └── SKILL.md
+└── langchain-skills/         ← langchain-ai/langchain-skills (11 skills)
+    ├── framework-selection/SKILL.md
+    ├── langchain-dependencies/SKILL.md
+    ├── langchain-fundamentals/SKILL.md
+    ├── langchain-middleware/SKILL.md
+    ├── langchain-rag/SKILL.md
+    ├── langgraph-fundamentals/SKILL.md
+    ├── langgraph-persistence/SKILL.md
+    ├── langgraph-human-in-the-loop/SKILL.md
+    ├── deep-agents-core/SKILL.md
+    ├── deep-agents-memory/SKILL.md
+    └── deep-agents-orchestration/SKILL.md
+```
+
+Total: 13 skills loaded at runtime.
 
 ### Skill Structure
 
@@ -119,31 +154,83 @@ To add a new skill:
 
 ### Agent Configuration
 
-- **thread_id**: Used for conversation state management with MemorySaver
-- **skills: ["/"]**: Loads all skills from the root of the skills directory
-- Skills are loaded dynamically at runtime by FilesystemBackend
+- **thread_id**: Used for conversation state management
+- **skills: ["/skills/"]**: Loads skills from the `skills/` directory
+- Skills with nested structure (e.g., `skills/langchain-skills/`) require recursive scan
+
+### LocalShellBackend
+
+New in `deepagents` 1.8.0. Executes local shell commands as agent tools.
+
+```typescript
+import { LocalShellBackend } from "deepagents";
+
+const shellBackend = new LocalShellBackend();
+await shellBackend.initialize();
+
+// execute() returns an object, not a string
+const result = await shellBackend.execute("ls -la");
+// { output: "...", exitCode: 0, truncated: false }
+console.log(result.output);
+
+await shellBackend.close();
+```
+
+**Note**: No sandbox by default. Use `BaseSandbox` for sandboxed execution.
+
+### tools Stream Mode
+
+New in `@langchain/langgraph` 1.2.0. Observe tool lifecycle events.
+
+```typescript
+const stream = await agent.stream(input, {
+  streamMode: "tools",
+  configurable: { thread_id }
+});
+
+for await (const event of stream) {
+  // { event: "on_tool_start", toolCallId, name, input }
+  // { event: "on_tool_end",   toolCallId, name, output }
+}
+```
+
+| streamMode  | Events | Content                    |
+|-------------|--------|----------------------------|
+| `messages`  | ~65    | Message chunks (streaming) |
+| `tools`     | ~4     | Tool lifecycle events only |
+| `updates`   | ~3     | Node-level state updates   |
+
+### Standard Schema (Zod v4)
+
+`@langchain/core` 1.1.31 supports Zod v4 schemas directly in `withStructuredOutput`.
+
+```typescript
+import { z } from "zod";
+
+const Schema = z.object({
+  title: z.string(),
+  keywords: z.array(z.string()),
+  confidence: z.number(),
+});
+
+const structuredModel = model.withStructuredOutput(Schema);
+const result = await structuredModel.invoke("...");
+// result is typed as { title: string; keywords: string[]; confidence: number }
+
+// With raw output:
+const structuredModelRaw = model.withStructuredOutput(Schema, { includeRaw: true });
+const { parsed, raw } = await structuredModelRaw.invoke("...");
+```
 
 ### Model Selection
 
-Currently using OpenAI GPT-4o (`gpt-4o`). To change models, update the model parameter in [src/index.ts](src/index.ts:22):
+Currently using OpenAI GPT-4o (`gpt-4o`). To change models, update the model parameter in [src/index.ts](src/index.ts):
 
 ```typescript
 const model = new ChatOpenAI({
   model: "gpt-4o",  // or "gpt-4-turbo", etc.
   apiKey: process.env.OPENAI_API_KEY,
 });
-```
-
-### Stream Processing
-
-The agent uses streaming responses. Each chunk contains potential message updates:
-
-```typescript
-for await (const chunk of stream) {
-  if (chunk.agent?.messages) {
-    // Process messages from agent
-  }
-}
 ```
 
 ## API Rate Limits
@@ -154,16 +241,22 @@ for await (const chunk of stream) {
 ## Dependencies
 
 **Runtime:**
-- `@langchain/openai`: OpenAI model integration
-- `@langchain/core`: LangChain core functionality
-- `@langchain/langgraph`: LangGraph framework and skills system
-- `dotenv`: Environment variable management
+
+- `@langchain/openai`: ^1.2.12 — OpenAI model integration (Standard Schema support)
+- `@langchain/core`: ^1.1.31 — LangChain core (Zod v4 / Standard Schema)
+- `@langchain/langgraph`: ^1.2.1 — LangGraph framework (`tools` stream mode, `Overwrite` channel, `StateSchema`)
+- `deepagents`: ^1.8.1 — Skills framework (`LocalShellBackend`, summarization middleware)
+- `zod`: ^4.3.6 — Schema validation (v4)
+- `dotenv`: ^16.4.7 — Environment variable management
 
 **Development:**
-- `typescript`: TypeScript compiler
-- `tsx`: TypeScript execution runtime
-- `@types/node`: Node.js type definitions
+
+- `typescript`: ^5.7.3
+- `tsx`: ^4.19.2
+- `@types/node`: ^22.10.5
 
 ## Project Context
 
-This is a demonstration/test environment for learning and experimenting with LangGraph.JS Skills. The README and documentation are in Japanese, indicating this is likely for Japanese-speaking developers learning the Skills framework.
+This is a demonstration/test environment for learning and experimenting with LangGraph.JS Skills and related packages. Verified against LangChain Skills v1 release (2026-03-09).
+
+See [docs/skills-exploration-plan/results/summary.md](docs/skills-exploration-plan/results/summary.md) for full verification results.
