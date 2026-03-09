@@ -8,7 +8,10 @@ This project is an environment for implementing and testing reusable agent capab
 
 ## 🎯 Implemented Skills
 
-### 1. langgraph-docs
+### Built-in Skills (2)
+
+#### 1. langgraph-docs
+
 A skill that accesses LangGraph documentation and provides up-to-date implementation guidance.
 
 **Features:**
@@ -16,7 +19,8 @@ A skill that accesses LangGraph documentation and provides up-to-date implementa
 - Identifies relevant documentation URLs
 - Provides accurate guidance based on the latest documentation
 
-### 2. arxiv-search
+#### 2. arxiv-search
+
 A skill for searching research papers from the arXiv preprint repository.
 
 **Features:**
@@ -29,21 +33,59 @@ A skill for searching research papers from the arXiv preprint repository.
 - Quantitative Biology, Statistics
 - Electrical Engineering, Systems Science, Economics
 
+### LangChain Skills v1 (11 skills)
+
+Sourced from [langchain-ai/langchain-skills](https://github.com/langchain-ai/langchain-skills) and placed in `skills/langchain-skills/`.
+
+| Category        | Skill                         | Description                                    |
+|-----------------|-------------------------------|------------------------------------------------|
+| Getting Started | `framework-selection`         | LangChain vs LangGraph selection guide         |
+| Getting Started | `langchain-dependencies`      | Version management and dependency guidance     |
+| LangChain       | `langchain-fundamentals`      | Agent creation, tools, structured output       |
+| LangChain       | `langchain-middleware`        | Custom middleware and resume patterns          |
+| LangChain       | `langchain-rag`               | RAG pipelines, document loaders, vector stores |
+| LangGraph       | `langgraph-fundamentals`      | StateGraph, nodes, edges, state reducers       |
+| LangGraph       | `langgraph-persistence`       | Checkpointers, thread_id, cross-thread memory  |
+| LangGraph       | `langgraph-human-in-the-loop` | Interrupts, validation, approval workflows     |
+| Deep Agents     | `deep-agents-core`            | Agent architecture and SKILL.md structure      |
+| Deep Agents     | `deep-agents-memory`          | Persistent memory and filesystem middleware    |
+| Deep Agents     | `deep-agents-orchestration`   | Sub-agents, task scheduling, HitL              |
+
+All 13 skills (2 built-in + 11 LangChain Skills v1) are automatically loaded at runtime.
+
 ## 📁 Project Structure
 
 ```
 langchain-skills-test/
 ├── src/
-│   ├── index.ts                      # Main entry point (Skills with streaming)
+│   ├── index.ts                      # Main entry point (deepagents + FilesystemBackend)
 │   ├── index-with-skills.ts          # Skills implementation example
 │   ├── index-with-graph.ts           # Custom graph implementation example
-│   └── index-with-claude-tools.ts    # Claude tools integration example
+│   ├── index-with-claude-tools.ts    # Claude tools integration example
+│   └── experiments/
+│       ├── local-shell.ts            # LocalShellBackend demo
+│       ├── tools-stream.ts           # streamMode: "tools" demo
+│       ├── standard-schema.ts        # Zod v4 + withStructuredOutput demo
+│       ├── skill-queries.ts          # Skill queries demo
+│       └── remaining-skill-queries.ts # Additional skill queries demo
 ├── skills/
 │   ├── langgraph-docs/
 │   │   └── SKILL.md                  # LangGraph documentation skill
-│   └── arxiv-search/
-│       ├── SKILL.md                  # arXiv search skill definition
-│       └── arxiv_search.ts           # arXiv API implementation
+│   ├── arxiv-search/
+│   │   ├── SKILL.md                  # arXiv search skill definition
+│   │   └── arxiv_search.ts           # arXiv API implementation
+│   └── langchain-skills/             # LangChain Skills v1 (11 skills)
+│       ├── framework-selection/SKILL.md
+│       ├── langchain-dependencies/SKILL.md
+│       ├── langchain-fundamentals/SKILL.md
+│       ├── langchain-middleware/SKILL.md
+│       ├── langchain-rag/SKILL.md
+│       ├── langgraph-fundamentals/SKILL.md
+│       ├── langgraph-persistence/SKILL.md
+│       ├── langgraph-human-in-the-loop/SKILL.md
+│       ├── deep-agents-core/SKILL.md
+│       ├── deep-agents-memory/SKILL.md
+│       └── deep-agents-orchestration/SKILL.md
 ├── package.json                      # Project dependencies and scripts
 ├── tsconfig.json                     # TypeScript configuration
 ├── .env.example                      # Environment variables template
@@ -61,7 +103,7 @@ langchain-skills-test/
 ### 1. Install Dependencies
 
 ```bash
-npm install
+yarn install
 ```
 
 ### 2. Configure Environment Variables
@@ -83,13 +125,13 @@ You can obtain an API key from [OpenAI Platform](https://platform.openai.com/api
 ### 3. Run the Program
 
 ```bash
-npm start
+yarn start
 ```
 
 Or in development mode (watches for file changes):
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 ## 💡 Usage Examples
@@ -204,7 +246,7 @@ Error: OPENAI_API_KEY is not set
 ### TypeScript Errors
 
 ```bash
-npm install
+yarn install
 ```
 
 Reinstall dependencies.
